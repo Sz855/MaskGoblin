@@ -3,24 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Goblin AR Mask</title>
+    <title>AR Camera with Snap Camera Kit</title>
     <style>
         body {
             margin: 0;
-            padding: 20px;
-            font-family: Arial, sans-serif;
-        }
-        #auth-container {
-            margin-bottom: 20px;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
         }
         #camera-container {
             width: 100%;
-            height: 70vh;
+            height: 100vh;
             position: relative;
         }
         button {
-            margin: 10px;
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
             padding: 10px 20px;
+            font-size: 16px;
             background-color: #0077ff;
             color: white;
             border: none;
@@ -30,71 +35,47 @@
     </style>
 </head>
 <body>
-    <div id="auth-container">
-        <div id="VkIdSdkOauthList"></div>
-        <div id="user-info" style="display: none;"></div>
-    </div>
-
     <div id="camera-container"></div>
-    <button id="change-lens" style="display: none;">Сменить фильтр</button>
+    <button id="change-lens">Сменить линзу</button>
 
     <script src="https://sdk.snapkit.com/js/v1/create.js"></script>
-    <script src="https://unpkg.com/@vkid/sdk@2.x/dist/vkid-sdk.js"></script>
-
     <script>
-        // VK ID Auth
-        VKID.Config.init({
-            app: 53003479,
-            redirectUrl: "https://sz855.github.io/MaskGoblin/"
-        });
+        // Инициализация Snap Camera Kit
+        snap.cameraKit.init({
+            apiToken: 'eyJhbGciOiJIUzI1NiIsImtpZCI6IkNhbnZhc1MyU0hNQUNQcm9kIiwidHlwIjoiSldUIn0.eyJhdWQiOiJjYW52YXMtY2FudmFzYXBpIiwiaXNzIjoiY2FudmFzLXMyc3Rva2VuIiwibmJmIjoxNzM4NTk5NzY3LCJzdWIiOiJmNDk5OGI1Yi01ZDE1LTQyOGMtYmFjZS00MmE2MmZhMzZmNjN-UFJPRFVDVElPTn5mODBlOThlOC1hZDVjLTQzY2ItYmJkYi05NTI3YmZhN2FlMWEifQ.jjURc3_v_ls5fqBC_s2qXBJ9tOOsSFvP38J5l2ShrRI',
+            defaultLens: 'b6a9be0e-7dc8-4666-af18-fa9afec96dc2',
+            onReady: () => {
+                console.log('Snap Camera Kit is ready!');
+                
+                // Создание камеры после инициализации
+                const cameraView = snap.cameraKit.createCamera({
+                    container: document.getElementById('camera-container'),
+                    lensId: 'ad336ffe-0a42-45de-b113-b915b46d1b0f',
+                    onSuccess: () => {
+                        console.log('Camera started successfully!');
+                    },
+                    onError: (error) => {
+                        console.error('Error starting camera:', error);
+                    }
+                });
 
-        const oauthList = new VKID.OauthList();
-        oauthList.render({
-            container: document.getElementById('VkIdSdkOauthList'),
-            list: ['vkid'],
-            onSuccess: (data) => {
-                document.getElementById('VkIdSdkOauthList').style.display = 'none';
-                document.getElementById('user-info').innerHTML = `
-                    Добро пожаловать, ${data.user.first_name}!
-                    <button onclick="logout()">Выйти</button>
-                `;
-                document.getElementById('user-info').style.display = 'block';
-                initCamera();
+                // Кнопка для смены линзы
+                const changeLensButton = document.getElementById('change-lens');
+                changeLensButton.addEventListener('click', () => {
+                    const newLensId = '5448352e-b104-44a8-8fc0-13a43b8d71ac';
+                    cameraView.applyLens(newLensId);
+                    console.log('Lens changed to:', newLensId);
+                });
+            },
+            onError: (error) => {
+                console.error('Error initializing Snap Camera Kit:', error);
             }
         });
 
-        // Snap Camera Kit
-        let cameraView = null;
-        let currentLens = '5448352e-b104-44a8-8fc0-13a43b8d71ac';
-
-        function initCamera() {
-            snap.cameraKit.init({
-                apiToken: 'eyJhbGciOiJIUzI1NiIsImtpZCI6IkNhbnZhc1MyU0hNQUNQcm9kIiwidHlwIjoiSldUIn0.eyJhdWQiOiJjYW52YXMtY2FudmFzYXBpIiwiaXNzIjoiY2FudmFzLXMyc3Rva2VuIiwibmJmIjoxNzM4NTk5NzY3LCJzdWIiOiJmNDk5OGI1Yi01ZDE1LTQyOGMtYmFjZS00MmE2MmZhMzZmNjN-U1RBR0lOR344NWI1ZDQ1Mi1lN2RmLTRlOTEtODQ2MC03YzU2YzdiODFkMmYifQ.1IGQWMRkXeqTHt0J88JD4Ah6C4fZTIaj64s9Rr3YcHI',
-                defaultLens: currentLens,
-                onReady: () => {
-                    cameraView = snap.cameraKit.createCamera({
-                        container: document.getElementById('camera-container'),
-                        lensId: currentLens
-                    });
-                    document.getElementById('change-lens').style.display = 'block';
-                }
-            });
-
-            document.getElementById('change-lens').addEventListener('click', () => {
-                currentLens = currentLens === '5448352e-b104-44a8-8fc0-13a43b8d71ac' 
-                    ? 'b6a9be0e-7dc8-4666-af18-fa9afec96dc2' 
-                    : '5448352e-b104-44a8-8fc0-13a43b8d71ac';
-                
-                cameraView.applyLens(currentLens);
-            });
-        }
-
-        function logout() {
-            VKID.Auth.logout();
-            document.getElementById('user-info').style.display = 'none';
-            document.getElementById('VkIdSdkOauthList').style.display = 'block';
-            if(cameraView) cameraView.destroy();
-        }
+        // Инициализация11111 VK SDK (убедитесь, что подключен скрипт VK)
+        VK.init({
+            apiId: 52997642 // Замените на ваш реальный VK App ID
+        });
     </script>
 </body>
 </html>
