@@ -42,46 +42,39 @@
     <script>
         // Инициализация Snap Camera Kit
         snap.cameraKit.init({
-            apiToken: eyJhbGciOiJIUzI1NiIsImtpZCI6IkNhbnZhc1MyU0hNQUNQcm9kIiwidHlwIjoiSldUIn0.eyJhdWQiOiJjYW52YXMtY2FudmFzYXBpIiwiaXNzIjoiY2FudmFzLXMyc3Rva2VuIiwibmJmIjoxNzM4NTk5NzY3LCJzdWIiOiJmNDk5OGI1Yi01ZDE1LTQyOGMtYmFjZS00MmE2MmZhMzZmNjN-UFJPRFVDVElPTn5mODBlOThlOC1hZDVjLTQzY2ItYmJkYi05NTI3YmZhN2FlMWEifQ.jjURc3_v_ls5fqBC_s2qXBJ9tOOsSFvP38J5l2ShrRI
-            defaultLens: b6a9be0e-7dc8-4666-af18-fa9afec96dc2 'LENS_ID_1', // Укажите Lens ID по умолчанию
+            apiToken: 'eyJhbGciOiJIUzI1NiIsImtpZCI6IkNhbnZhc1MyU0hNQUNQcm9kIiwidHlwIjoiSldUIn0.eyJhdWQiOiJjYW52YXMtY2FudmFzYXBpIiwiaXNzIjoiY2FudmFzLXMyc3Rva2VuIiwibmJmIjoxNzM4NTk5NzY3LCJzdWIiOiJmNDk5OGI1Yi01ZDE1LTQyOGMtYmFjZS00MmE2MmZhMzZmNjN-UFJPRFVDVElPTn5mODBlOThlOC1hZDVjLTQzY2ItYmJkYi05NTI3YmZhN2FlMWEifQ.jjURc3_v_ls5fqBC_s2qXBJ9tOOsSFvP38J5l2ShrRI',
+            defaultLens: 'b6a9be0e-7dc8-4666-af18-fa9afec96dc2',
             onReady: () => {
                 console.log('Snap Camera Kit is ready!');
+                
+                // Создание камеры после инициализации
+                const cameraView = snap.cameraKit.createCamera({
+                    container: document.getElementById('camera-container'),
+                    lensId: 'ad336ffe-0a42-45de-b113-b915b46d1b0f',
+                    onSuccess: () => {
+                        console.log('Camera started successfully!');
+                    },
+                    onError: (error) => {
+                        console.error('Error starting camera:', error);
+                    }
+                });
+
+                // Кнопка для смены линзы
+                const changeLensButton = document.getElementById('change-lens');
+                changeLensButton.addEventListener('click', () => {
+                    const newLensId = '5448352e-b104-44a8-8fc0-13a43b8d71ac';
+                    cameraView.applyLens(newLensId);
+                    console.log('Lens changed to:', newLensId);
+                });
             },
             onError: (error) => {
                 console.error('Error initializing Snap Camera Kit:', error);
             }
         });
 
-        // Создание камеры
-        const cameraView = snap.cameraKit.createCamera({
-            container: document.getElementById('camera-container'),
-            lensId: 'LENS_ID_1', // Укажите Lens ID по умолчанию
-            onSuccess: () => {
-                console.log('Camera started successfully!');
-            },
-            onError: (error) => {
-                console.error('Error starting camera:', error);
-            }
-        });
-
-        // Кнопка для смены линзы
-        const changeLensButton = document.getElementById('change-lens');
-        changeLensButton.addEventListener('click', () => {
-            const newLensId = 5448352e-b104-44a8-8fc0-13a43b8d71ac 'LENS_ID_2'; // Укажите новый Lens ID
-            cameraView.applyLens(newLensId);
-            console.log('Lens changed to:', newLensId);
-        });
-
-        // Инициализация VK SDK
+        // Инициализация11111 VK SDK (убедитесь, что подключен скрипт VK)
         VK.init({
-            apiId: https://vk.com/app52997642 YOUR_VK_APP_ID, // Замените на ваш VK App ID
-        });
-
-        // Обработка событий VK
-        VK.Widgets.CommunityMessages("vk_community_messages", {
-            widgetPosition: "right", // Позиция виджета сообщений
-            tooltipButtonText: "Написать нам", // Текст кнопки
-            disableButtonTooltip: "Сообщения отключены", // Текст при отключении
+            apiId: 52997642 // Замените на ваш реальный VK App ID
         });
     </script>
 </body>
